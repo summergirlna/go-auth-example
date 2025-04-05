@@ -3,3 +3,20 @@ services:
     image: "localhost/app1:0.0.1"
     ports:
       - "8080:8080"
+
+  ldap:
+    image: "osixia/openldap:1.5.0"
+    container_name: ldap
+    environment:
+      LDAP_ORGANISATION: "海山商事"
+      LDAP_DOMAIN: "umiyama.com"
+      LDAP_ADMIN_PASSWORD: "admin"
+    ports:
+      - "389:389"
+    volumes:
+      - "ldap_data:/var/lib/ldap"
+      - "ldap_config:/etc/ldap/slap.d"
+
+volumes:
+  ldap_data:
+  ldap_config:

@@ -1,0 +1,10 @@
+dn: ou=soumu,dc=umiyama,dc=com
+objectClass: organizationalUnit
+ou: soumu
+
+dn: uid=admin,ou=soumu,dc=umiyama,dc=com
+objectClass: inetOrgPerson
+uid: admin
+sn: Umiyama
+cn: Umiyama Taro
+userPassword: admin

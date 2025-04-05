@@ -1,0 +1,3 @@
+ldapsearch -x -H ldap://localhost -D "cn=admin,dc=umiyama,dc=com" -w admin -b "dc=umiyama,dc=com"
+
+ldapadd -x -H ldap://localhost -D "cn=admin,dc=umiyama,dc=com" -w admin -f ./data/ldap/init-user.ldif
