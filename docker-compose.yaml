@@ -3,6 +3,8 @@ services:
     image: "localhost/app1:0.0.1"
     ports:
       - "8080:8080"
+    depends_on:
+      - ldap
 
   ldap:
     image: "osixia/openldap:1.5.0"
