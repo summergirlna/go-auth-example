@@ -1,0 +1,5 @@
+services:
+  app1:
+    image: "localhost/app1:0.0.1"
+    ports:
+      - "8080:8080"

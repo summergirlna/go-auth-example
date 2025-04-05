@@ -7,37 +7,47 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-
-	"github.com/magefile/mage/mg" // mg contains helpful utility functions, like Deps
 )
 
 // Default target to run when none is specified
 // If not set, running mage will list available targets
 var Default = Build
 
+var (
+	//targets = []string{"app1"}
+	targets = map[string]string{
+		"app1": "0.0.1",
+	}
+)
+
 // A build step that requires additional params, or platform specific steps for example
 func Build() error {
-	mg.Deps(InstallDeps)
-	fmt.Println("Building...")
-	cmd := exec.Command("go", "build", "-o", "bin/MyApp", ".")
-	return cmd.Run()
-}
+	for k, v := range targets {
+		fmt.Printf("ビルド開始。ターゲット名: %s\n", k)
+		cmd1 := exec.Command("go", "build", "-o",
+			fmt.Sprintf("bin/%s", k), fmt.Sprintf("cmd/%s/main.go", k))
+		cmd1.Stdout = os.Stdout
+		cmd1.Stderr = os.Stderr
 
-// A custom install step if you need your bin someplace other than go/bin
-func Install() error {
-	mg.Deps(Build)
-	fmt.Println("Installing...")
-	return os.Rename("./MyApp", "/usr/bin/MyApp")
-}
+		if err := cmd1.Run(); err != nil {
+			return err
+		}
 
-// Manage your deps, or running package managers.
-func InstallDeps() error {
-	fmt.Println("Installing Deps...")
-	//cmd := exec.Command("go", "get", "github.com/stretchr/piglatin")
-	//return cmd.Run()
+		fmt.Printf("イメージ作成開始。ターゲット名: %s\n", k)
+		cmd2 := exec.Command("podman", "build", "-t",
+			fmt.Sprintf("localhost/%s:%s", k, v), "-f", fmt.Sprintf("cmd/%s/Dockerfile", k), ".")
+		cmd2.Stdout = os.Stdout
+		cmd2.Stderr = os.Stderr
+
+		if err := cmd2.Run(); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
+// Manage your deps, or running package managers.
 // Clean up after yourself
 func Clean() {
 	fmt.Println("Cleaning...")
