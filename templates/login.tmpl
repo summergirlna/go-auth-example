@@ -1,0 +1,13 @@
+<html lang="en">
+<body>
+    <h1>Login</h1>
+    <form action="/login" method="post">
+        <label>ID: <input type="text" name="username"></label><br>
+        <label>PW: <input type="password" name="password"></label><br>
+        <input type="submit" value="Login">
+    </form>
+    {{ if .error }}
+        <p style="color: red">{{ .error }}</p>
+    {{ end }}
+</body>
+</html>
