@@ -1,6 +1,8 @@
 services:
   app1:
     image: "localhost/app1:0.0.1"
+    environment:
+      LDAP_URL: "ldap://ldap:389"
     ports:
       - "8080:8080"
     depends_on:
