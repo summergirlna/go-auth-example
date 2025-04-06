@@ -7,6 +7,7 @@ import (
 	"github.com/go-ldap/ldap/v3"
 	"go-auth-example/cmd/app1/controller/finalize"
 	"go-auth-example/cmd/app1/controller/initialize"
+	"log"
 	"os"
 )
 
@@ -15,10 +16,15 @@ func main() {
 	router.LoadHTMLGlob("templates/*")
 	redisURL := os.Getenv("REDIS_URL")
 	ldapURL := os.Getenv("LDAP_URL")
-	conn, _ := ldap.DialURL(ldapURL)
+	conn, err := ldap.DialURL(ldapURL)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer conn.Close()
-
-	store, _ := redis.NewStore(10, "tcp", redisURL, "", []byte("secret"))
+	store, err := redis.NewStore(10, "tcp", redisURL, "", []byte("secret"))
+	if err != nil {
+		log.Fatal(err)
+	}
 	router.Use(sessions.Sessions("session", store))
 
 	// *************************************
@@ -27,6 +33,7 @@ func main() {
 	router.GET("/login", initialize.NewLoginController().Execute)
 	router.POST("/login", finalize.NewLoginController(conn).Execute)
 	router.GET("/index", initialize.NewMainPageController().Execute)
+	router.GET("/logout", initialize.NewLogoutController().Execute)
 
 	// *************************************
 	// 起動

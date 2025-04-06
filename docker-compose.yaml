@@ -6,6 +6,11 @@ services:
       REDIS_URL: "redis:6379"
     ports:
       - "8080:8080"
+    command:
+      - "/wait-for-it.sh"
+      - "ldap:389"
+      - "--"
+      - "/app1"
     depends_on:
       - ldap
       - redis
