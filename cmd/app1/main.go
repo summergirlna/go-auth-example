@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/go-ldap/ldap/v3"
 	"net/http"
@@ -11,6 +13,8 @@ import (
 func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
+	store := cookie.NewStore([]byte("secret"))
+	router.Use(sessions.Sessions("session", store))
 
 	// *************************************
 	// ログイン(初期化)
@@ -84,6 +88,10 @@ func main() {
 		}
 
 		// 認証成功の場合
+		session := sessions.Default(c)
+		session.Set("username", username)
+		session.Save()
+
 		c.Redirect(http.StatusFound, "/index")
 	})
 
@@ -91,6 +99,14 @@ func main() {
 	// メインページ(ダミー)
 	// *************************************
 	router.GET("/index", func(c *gin.Context) {
+		session := sessions.Default(c)
+		user := session.Get("username")
+
+		if user == nil {
+			c.Redirect(http.StatusFound, "/login")
+			return
+		}
+
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Main website",
 		})
