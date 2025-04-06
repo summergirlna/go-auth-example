@@ -3,10 +3,12 @@ services:
     image: "localhost/app1:0.0.1"
     environment:
       LDAP_URL: "ldap://ldap:389"
+      REDIS_URL: "redis:6379"
     ports:
       - "8080:8080"
     depends_on:
       - ldap
+      - redis
 
   ldap:
     image: "osixia/openldap:1.5.0"
@@ -21,6 +23,15 @@ services:
       - "ldap_data:/var/lib/ldap"
       - "ldap_config:/etc/ldap/slapd.d"
 
+  redis:
+    image: "redis:7.4.2-alpine"
+    container_name: redis
+    volumes:
+      - "redis_data:/data"
+    ports:
+      - "6379:6379"
+
 volumes:
   ldap_data:
   ldap_config:
+  redis_data:

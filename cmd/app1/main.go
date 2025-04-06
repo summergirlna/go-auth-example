@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/go-ldap/ldap/v3"
 	"net/http"
@@ -13,7 +13,8 @@ import (
 func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
-	store := cookie.NewStore([]byte("secret"))
+	redisURL := os.Getenv("REDIS_URL")
+	store, _ := redis.NewStore(10, "tcp", redisURL, "", []byte("secret"))
 	router.Use(sessions.Sessions("session", store))
 
 	// *************************************
