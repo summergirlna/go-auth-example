@@ -11,7 +11,7 @@ type MainPageController struct{}
 
 func (m MainPageController) Execute(c *gin.Context) {
 	session := sessions.Default(c)
-	user := session.Get("username")
+	user := session.Get("user")
 
 	if user == nil {
 		c.Redirect(http.StatusFound, "/login")

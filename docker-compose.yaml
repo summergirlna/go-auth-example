@@ -4,16 +4,28 @@ services:
     environment:
       LDAP_URL: "ldap://ldap:389"
       REDIS_URL: "redis:6379"
+      OIDC_ISSUER: "http://localhost:8081/realms/app1_realm"
+      OIDC_CLIENT_ID: "app1_client"
+      OIDC_CLIENT_SECRET: "mAoR3Uki3WdX2udE0bOy8D4l66yYUZCg"
+      REDIRECT_URI: "http://localhost:8080/callback"
     ports:
       - "8080:8080"
     command:
       - "/wait-for-it.sh"
       - "ldap:389"
+      - "-t"
+      - "60"
+      - "--"
+      - "/wait-for-it.sh"
+      - "keycloak:8080"
+      - "-t"
+      - "60"
       - "--"
       - "/app1"
     depends_on:
       - ldap
       - redis
+      - keycloak
 
   ldap:
     image: "osixia/openldap:1.5.0"
@@ -36,7 +48,21 @@ services:
     ports:
       - "6379:6379"
 
+  keycloak:
+    image: "quay.io/keycloak/keycloak:26.1"
+    container_name: keycloak
+    command:
+      - start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8081:8080"
+    volumes:
+      - "keycloak_data:/opt/keycloak/data"
+
 volumes:
   ldap_data:
   ldap_config:
   redis_data:
+  keycloak_data:
